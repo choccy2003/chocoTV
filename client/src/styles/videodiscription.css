@@ -1,0 +1,62 @@
+.like-button{
+    transition: fill 300ms,transform 300ms;
+}
+.like-button:hover{
+    transform: scale(1.1);
+    fill:rgb(228, 115, 255) ;
+}
+.dislike-button{
+    transition: fill 300ms,transform 300ms;
+    position: relative;
+    top: 4px;
+    left: 5%;
+}
+.dislike-button:hover{
+    transform: scale(1.1);
+    fill:rgb(255, 115, 115) ;
+}
+.video-description{
+    background-color: rgb(28, 29, 31);
+    width: 92%;
+    border-radius: 15px;
+    padding: 2%;
+    margin-top: 2%;
+    cursor: pointer;
+    
+}
+textarea:focus {
+  outline: none !important;
+}
+.recommend-section-mobile-view{
+    display: none;
+}
+@media screen and (max-width: 1570px) {
+  .home-page{
+display: block !important;
+}  
+.recommend-section{
+    display: none;
+}
+.recommend-section-mobile-view{
+    display: block;
+}
+.video-section{
+    width: 100% !important;
+}
+.video-title{
+ font-size: 1.4rem !important;
+}
+.channel-name{
+    font-size: 1rem !important;
+  
+}
+.share-button{
+    display: none !important;
+}
+.button-grid{
+    margin-left: auto !important;
+}
+.subscribe-button{
+    display: none;
+}
+}
