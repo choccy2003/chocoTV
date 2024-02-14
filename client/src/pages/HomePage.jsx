@@ -8,13 +8,14 @@ import { setUserData } from "../redux-slice/userDataSlice";
 const HomePage = () => {  
 const btn=useRef(null)
 const [file, setFile] = useState(null);
+const userData=useSelector((state)=>state.userData)
 const [videoDetails,updateVideoDetails]=useState({
   videoTitle:'',
   videoDescription:'',
   videoResourcePath:'',
   thumbnailResourcePath:'http://localhost:3001/images/thumbnail-1.png',
-  channelName:'a',
-  channelId:'a',
+  channelName:'',
+  channelId:'',
 })
 const dispatch=useDispatch();
 const handleInputChange=(e)=>{
@@ -23,14 +24,14 @@ const handleInputChange=(e)=>{
 }
 const handleFileChange = (event) => {
   setFile(event.target.files[0]);
-  updateVideoDetails({...videoDetails,videoResourcePath:`http://localhost:3001/videos/${event.target.files[0].name}`}) 
   
+  updateVideoDetails({...videoDetails,channelName:userData.userName,channelId:userData.userId}) 
+
 };
 
 const handleSubmit = async (event) => {
   event.preventDefault();
-
-  // Disable the submit button during submission
+  console.log(videoDetails)
   btn.current.disabled = true;
 
   try {
@@ -38,7 +39,6 @@ const handleSubmit = async (event) => {
     formData.append('mp4file', file);
     formData.append('videoTitle', videoDetails.videoTitle);
     formData.append('videoDescription', videoDetails.videoDescription);
-    formData.append('videoResourcePath', videoDetails.videoResourcePath);
     formData.append('channelName', videoDetails.channelName);
     formData.append('channelId', videoDetails.channelId);
     formData.append('thumbnailResourcePath',videoDetails.thumbnailResourcePath)
@@ -50,7 +50,7 @@ const handleSubmit = async (event) => {
     btn.current.disabled = false;
   }
 };
-console.log(useSelector((state)=>state.userData))
+
 useEffect(()=>{
 
 const cookieValue = Cookies.get('token');  

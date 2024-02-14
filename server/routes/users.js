@@ -6,6 +6,7 @@ const Users = require('../models/users');
 require('dotenv').config()
 const bcrypt=require('bcrypt')
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
 const usersecretKey = process.env.SECRET_KEY;
 const storage = multer.diskStorage ({
     destination: (req, file, cb) => {
@@ -13,36 +14,32 @@ const storage = multer.diskStorage ({
     },
     
     filename: (req, file, cb) => {
-        cb(null, file.originalname)
+      const uniqueFilename = Date.now() + '-' + Math.round(Math.random() * 1E9) + '-' + file.originalname;
+      cb(null, uniqueFilename);
     }
 });
 const upload = multer({ storage });
 
 router.post('/upload-video', upload.single('mp4file'), async (req, res, next) => {
   try {
-    console.log('Received file upload request');
-    
     const file = req.file;
     if (!file) {
       const error = new Error('Please attach a file');
       error.statusCode = 400;
       throw error;
     }
-    
-    console.log('File:', file);
-    
-    const { videoTitle, videoDescription, videoResourcePath, thumbnailResourcePath, channelName, channelId } = req.body;
-    console.log('Received form data:', req.body);
-    
-    const video = new Videos({ videoTitle, videoDescription, videoResourcePath, thumbnailResourcePath, channelName, channelId });
+    const { videoTitle, videoDescription, thumbnailResourcePath, channelName, channelId } = req.body;
+    const video = new Videos({ videoTitle, videoDescription, thumbnailResourcePath, channelName, channelId });
     const saveVideo = await video.save();
-
+    const videoResourcePath = `http://localhost:3001/videos/${saveVideo._id}`;
+    saveVideo.videoResourcePath = videoResourcePath; 
+    await saveVideo.save(); 
+    const filename = saveVideo._id+'.mp4'
+    fs.renameSync('public/videos/' + file.filename, 'public/videos/' + filename);
     if (saveVideo) {
-      console.log('Video saved successfully');
-      res.send('File uploaded successfully and video saved successfully');
+      res.send('Success');
     } else {
-      console.log('Failed to save video');
-      res.send('File uploaded successfully but video failed to save');
+      res.send('Failure');
     }
   } catch (err) {
     console.error('Error:', err);
@@ -91,7 +88,7 @@ router.post('/login',async(req,res,next)=>{
         }
         else{
           const token = jwt.sign({userId: userExist._id},usersecretKey,{expiresIn:'30d'});
-          res.send({data:{userName:userExist.userName,email:userExist.email,uploadedVideos:userExist.uploadedVideos,subscriberCount:userExist.subscriberCount,subscribedChannels:userExist.subscribedChannels,subscribedChannelIds:userExist.subscribedChannelIds,likedVideos:userExist.likedVideos},token:token,msg:"Success"})
+          res.send({data:{userName:userExist.userName,email:userExist.email,uploadedVideos:userExist.uploadedVideos,subscriberCount:userExist.subscriberCount,subscribedChannels:userExist.subscribedChannels,subscribedChannelIds:userExist.subscribedChannelIds,likedVideos:userExist.likedVideos,userId:userExist._id},token:token,msg:"Success"})
         }
       })
     }
@@ -111,7 +108,7 @@ router.post("/fetch-user-data",async(req,res,next)=>{
   const user = await Users.findById(decoded.userId).exec();
 
   if(user){
-    res.send({data:{userName:user.userName,email:user.email,uploadedVideos:user.uploadedVideos,subscriberCount:user.subscriberCount,subscribedChannels:user.subscribedChannels,subscribedChannelIds:user.subscribedChannelIds,likedVideos:user.likedVideos}})
+    res.send({data:{userName:user.userName,email:user.email,uploadedVideos:user.uploadedVideos,subscriberCount:user.subscriberCount,subscribedChannels:user.subscribedChannels,subscribedChannelIds:user.subscribedChannelIds,likedVideos:user.likedVideos,userId:user._id}})
   }
   else{
     res.send("Unauthorized!")
@@ -121,6 +118,21 @@ router.post("/fetch-user-data",async(req,res,next)=>{
     res.send(err)
   }
 
+})
+router.post('/fetch-video',async(req,res,next)=>{
+  try{
+    const videoId = req.body._id
+    const video = await Videos.findById(videoId).exec()
+    if(video){
+      res.send(video)
+    }
+    else{
+      res.send("not found")
+    }
+  }
+  catch(err){
+    res.send(err)
+  }
 })
 
 

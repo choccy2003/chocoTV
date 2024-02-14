@@ -30,6 +30,9 @@ textarea:focus {
 .recommend-section-mobile-view{
     display: none;
 }
+.subscribe-button{
+    margin-left: 5px;
+}
 @media screen and (max-width: 1570px) {
   .home-page{
 display: block !important;

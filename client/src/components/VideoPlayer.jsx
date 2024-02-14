@@ -83,7 +83,7 @@ const handleVideoSeek = (value) => {
       {videoReplay&&(<MdReplayCircleFilled className='replay-button' onClick={()=>{updateVideoReplay(false);video.current.play();updateVideoPlaying(true)}} style={{position:"absolute",inset:"0",margin:"auto",left:"7%",fontSize:"50px"}}/>)}
    
         <video className='video-player' onClick={()=>{if(videoPlaying){video.current.pause();updateVideoPlaying(false)} else{video.current.play();updateVideoPlaying(true);updateVideoReplay(false)}}} onEnded={()=>{updateVideoPlaying(false);updateVideoReplay(true)}} onTimeUpdate={(e)=>{updateVideoDuration(e.target.currentTime); if(videoSeeker===false){videoProgressBarCalculator()};}} ref={video} id='video' style={{width:`${props.width}vw`,borderRadius:"10px"}} onMouseOver={()=>{updateViewControls(true);updateControlAnimation(true)}}  >
-        <source src={`http://192.168.1.6:3001/videos/vid${props.videoId}.mp4`} type="video/mp4"/>
+        <source src={`http://localhost:3001/videos/${props.videoId}.mp4`} type="video/mp4"/>
         
         </video>
         {(controlAnimation||viewControls||videoReplay)&&(<div ref={videoControls} className='video-controls' style={{display:"flex",flexDirection:"column"}}>
