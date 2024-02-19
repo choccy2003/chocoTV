@@ -21,13 +21,13 @@ const LoginPage = () => {
     const handleSubmit=(event)=>{
         event.preventDefault();
         if(formData.email && formData.password){
-    axios.post("http://localhost:3001/users/login",formData)
+    axios.post("http://localhost:3001/users/login",formData,{
+        withCredentials: true 
+      })
         .then((response)=>{
             console.log(response)
             if(response.data.msg === "Success"){
-                dispatch(setUserData(response.data.data))
-                toast("Signup Successful!")
-                Cookies.set('token', response.data.token, { expires: 60 });
+                toast("Login Successful!")
                 setTimeout(()=>{ navigate('/')},2000)
                 
             }

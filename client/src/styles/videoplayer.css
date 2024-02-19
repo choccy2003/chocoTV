@@ -63,11 +63,3 @@ border-radius: 100px;
     transform: rotate(-90deg);
   }
 
-  @media screen and (max-width: 1570px) {
-    .video-player,.video-player-container,.video-controls,.video-controls-buttons{
-      width: 96vw !important;
-    }
-    .video-slider {
-      width: 95vw !important;
-    }
-  }

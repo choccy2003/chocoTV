@@ -13,7 +13,6 @@ var app = express();
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -21,7 +20,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images',express.static(path.join(__dirname,'public/images')))
 
-app.use(cors())
+app.use(cors({
+  origin: 'http://localhost:3000', 
+  credentials: true 
+}));
 app.get('/videos/:filename', (req, res) => {
   const filePath = path.join(__dirname, 'public', 'videos', req.params.filename);
   res.sendFile(filePath, { headers: { 'Content-Type': 'video/mp4' } });

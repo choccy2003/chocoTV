@@ -8,7 +8,7 @@ const videos= new Schema(
         likeCount:{type:Number,default:0},
         dislikeCount:{type:Number,default:0},
         videoResourcePath:{type:String},
-        thumbnailResourcePath:{type:String,required:true},
+        thumbnailResourcePath:{type:String},
         subscriberCount:{type:Number,default:0},
         channelName:{type:String,required:true},
         channelIconResourcePath:{type:String},

@@ -1,0 +1,8 @@
+@media screen and (max-width: 1570px) {
+    .videoPlayer{
+      width: 96vw !important;
+    }
+    .videoSliderModule{
+      width: 95vw !important;
+    }
+  }
