@@ -44,6 +44,7 @@
     color: black;
     background-color: rgb(187, 134, 252);
 }
+
 @media screen and (max-width: 950px) {
     .preview-tab{
         display: none !important;
@@ -57,4 +58,16 @@
         margin-top: 8px;
     }
     
+}
+
+@media screen and (max-width: 1500px) {
+    .hero-font{
+    font-size: 40px !important;
+    width: 40%;
+    }
+}
+@media screen and (max-width: 1400px) {
+    .hero-section{
+        display: none !important;
+    }
 }

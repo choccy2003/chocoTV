@@ -121,6 +121,7 @@ router.post('/login',async(req,res,next)=>{
 router.post("/fetch-user-data",async(req,res,next)=>{
   
   try{
+    console.log(req.cookies)
     const tokenCook = req.cookies.token;
     if(tokenCook){
       const decoded= jwt.verify(tokenCook,usersecretKey)
@@ -182,6 +183,69 @@ catch(err){
   res.send(errorMonitor)
 }
 })
+router.post("/handle-like",async(req,res,next)=>{
+  try{
+    console.log(req.cookies.token)
+    const tokenCook = req.cookies.token;
+    const {likeStatus,videoId} = req.body
+    
+    
+    if(tokenCook){
+      const decode = jwt.verify(tokenCook,usersecretKey)
+      const userExs = await Users.findById(decode.userId).exec()
+      console.log("TOken ok")
+      if(userExs){
+        const video = await Videos.findById(videoId)
+        const likeHistory = userExs.likedVideos.filter(id => id == videoId)
+        console.log(likeHistory)
+        if(likeHistory.length>=1){
+          if(likeStatus=="false"){
+            if(video.likeCount>0){
+              video.likeCount-=1
+            await video.save()
+            }
+            userExs.likedVideos = userExs.likedVideos.filter(id => id !== videoId);
+            await userExs.save();
+            res.send({msg:"Unliked",likes:video.likeCount})
 
+          }
+          else{
+            res.send("Already liked")
+          }
+          
+        }
+        else{
+          if(video){
+
+            if(likeStatus == "true"){
+            video.likeCount+=1
+            await video.save()
+            userExs.likedVideos.push(videoId)
+            await userExs.save()
+            res.send({msg:"Liked",likes:video.likeCount})
+            }
+            else{
+              res.send("Unliked")
+            }
+          }
+          else{
+            res.send("Unable to locate video")
+          }
+        }
+        
+      }
+      else{
+        res.send("Such user doesnt exist")
+      }
+    }
+    else{
+      res.send("Token not found")
+    }
+
+  }
+  catch(err){
+    console.log(err)
+  }
+})
 
 module.exports = router;

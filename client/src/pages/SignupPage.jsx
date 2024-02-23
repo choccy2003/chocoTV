@@ -19,9 +19,9 @@ const SignupPage = () => {
         e.preventDefault()
         if(formData.userName && formData.password && formData.email && formData.phoneNumber){
  axios.post("http://localhost:3001/users/register",formData).then((response)=>{
-            console.log(response)
+           
             if(response.data.msg === "success"){
-                console.log(response.msg)
+               
                         toast("Signup Successful!")
              setTimeout(()=>{ navigate('/login')},2000)
             }

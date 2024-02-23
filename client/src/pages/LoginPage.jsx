@@ -25,7 +25,6 @@ const LoginPage = () => {
         withCredentials: true 
       })
         .then((response)=>{
-            console.log(response)
             if(response.data.msg === "Success"){
                 toast("Login Successful!")
                 setTimeout(()=>{ navigate('/')},2000)

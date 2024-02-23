@@ -40,7 +40,6 @@ setJpgFile(event.target.files[0])
 
 const handleSubmit = async (event) => {
   event.preventDefault();
-  console.log(videoDetails)
   setUploadStarted(true)
   try {
     const formData = new FormData();
@@ -83,7 +82,7 @@ console.log("Session expired")
 }
 
 },[])
-console.log(userData)
+
 return(
 <>
 <Navbar/>

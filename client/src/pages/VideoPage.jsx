@@ -12,34 +12,23 @@ import { setVideoData } from '../redux-slice/videoDataSlice'
 
 const VideoPage = () => {
     let {videoId}=useParams();
-
- 
+     const data = useSelector((state)=> state.videoData)
+    const [filteredData,setFilteredData]=useState()
+    useEffect(() => {
+      const filteredData = data.filter(video => video.videoId !== videoId);
+      setFilteredData(filteredData); 
+    }, [data, videoId]);
     const dispatch=useDispatch()
-    const data = useSelector((state)=> state.videoData)
-    console.log(data)
-    const [videoDetails,setVideoDetails]=useState(null)
+   
     useEffect(()=>{
-      axios.post("http://localhost:3001/users/fetch-videos",{})
+      axios.post("http://192.168.1.6:3001/users/fetch-videos",{})
       .then((response)=>{
-        console.log(response.data.data)
         const videos = response.data.data
         dispatch(setVideoData(videos));
       })
     },[])
-    useEffect(() => {
-      if (videoId) {
-        axios.post('http://localhost:3001/users/fetch-video', { _id: videoId })
-          .then((response) => {
-            console.log(response.data)
-            setVideoDetails(response.data);
-          })
-          .catch((error) => {
-            console.error('Error fetching video:', error);
-          });
-      }
-    }, [videoId]);
+    
     const [recommendedVideosArray,updateRecommendedVideosArray]=useState([0,0,0,0,0,0,0,0,0,0,0,0])
-    console.log(videoDetails?videoDetails._id:0)
     return (
       <>
       <Navbar/>
@@ -50,12 +39,12 @@ const VideoPage = () => {
     <div className='video-section' style={{display:"flex",flexDirection:"column",width:"69%",marginLeft:"2%"}}>
     <VideoPlayer applyMediaQueries={true} videoId={videoId} className="video-section-1" width={64}/>
   
-  <VideoDiscription videoDetails={videoDetails} />
+  <VideoDiscription videoId={videoId} />
   <CommentSection/>
   
     </div>
     <div className='recommend-section' style={{width:"31%",}}>
-      {data?(data.map((data)=>{
+      {filteredData?(filteredData.map((data)=>{
         return <div style={{margin:"0px 0 15px 0"}}><RecommendSection data={data} /></div>
       })):(<div></div>)}
       
