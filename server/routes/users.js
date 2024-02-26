@@ -121,7 +121,6 @@ router.post('/login',async(req,res,next)=>{
 router.post("/fetch-user-data",async(req,res,next)=>{
   
   try{
-    console.log(req.cookies)
     const tokenCook = req.cookies.token;
     if(tokenCook){
       const decoded= jwt.verify(tokenCook,usersecretKey)
@@ -185,52 +184,54 @@ catch(err){
 })
 router.post("/handle-like",async(req,res,next)=>{
   try{
-    console.log(req.cookies.token)
     const tokenCook = req.cookies.token;
     const {likeStatus,videoId} = req.body
-    
     
     if(tokenCook){
       const decode = jwt.verify(tokenCook,usersecretKey)
       const userExs = await Users.findById(decode.userId).exec()
-      console.log("TOken ok")
       if(userExs){
         const video = await Videos.findById(videoId)
+        const dislikeHistory = userExs.dislikedVideos.filter(id => id == videoId)
         const likeHistory = userExs.likedVideos.filter(id => id == videoId)
-        console.log(likeHistory)
         if(likeHistory.length>=1){
-          if(likeStatus=="false"){
+          if(likeStatus=="default flag"){
+            res.send({likeStatus:"liked"})
+        } 
+          else if(likeStatus=="false"){
             if(video.likeCount>0){
               video.likeCount-=1
             await video.save()
             }
             userExs.likedVideos = userExs.likedVideos.filter(id => id !== videoId);
             await userExs.save();
-            res.send({msg:"Unliked",likes:video.likeCount})
+            res.send({msg:"Unliked",data:video})
 
           }
+
           else{
             res.send("Already liked")
           }
           
         }
-        else{
+        else if(likeStatus=="true"){
           if(video){
 
-            if(likeStatus == "true"){
+
             video.likeCount+=1
             await video.save()
             userExs.likedVideos.push(videoId)
             await userExs.save()
-            res.send({msg:"Liked",likes:video.likeCount})
-            }
-            else{
-              res.send("Unliked")
-            }
+            res.send({msg:"Liked",data:video})
+            
+
           }
           else{
             res.send("Unable to locate video")
           }
+        }
+        else{
+          res.send("error occured")
         }
         
       }
@@ -248,4 +249,172 @@ router.post("/handle-like",async(req,res,next)=>{
   }
 })
 
+router.post("/handle-dislike",async(req,res,next)=>{
+  try{
+    const tokenCook = req.cookies.token;
+    const {dislikeStatus,videoId} = req.body
+ 
+    if(tokenCook){
+      const decode = jwt.verify(tokenCook,usersecretKey)
+      const userExs = await Users.findById(decode.userId).exec()
+      if(userExs){
+        const video = await Videos.findById(videoId)
+        const dislikeHistory = userExs.dislikedVideos.filter(id => id == videoId)
+        const likeHistory = userExs.likedVideos.filter(id => id == videoId)
+        console.log(dislikeHistory)
+        if(dislikeHistory.length>=1){
+          if(dislikeStatus=="default flag"){
+            res.send({dislikeStatus:"disliked"})
+        } 
+          else if(dislikeStatus=="false"){
+            if(video.dislikeCount>0){
+              video.dislikeCount-=1
+            await video.save()
+            }
+            userExs.dislikedVideos = userExs.dislikedVideos.filter(id => id !== videoId);
+            await userExs.save();
+            res.send({msg:"Undisliked",data:video})
+
+          }
+
+          else{
+            res.send("Already disliked")
+          }
+          
+        }
+        else if(dislikeStatus=="true"){
+          if(video){
+
+
+            video.dislikeCount+=1
+            await video.save()
+            userExs.dislikedVideos.push(videoId)
+            await userExs.save()
+            res.send({msg:"disliked",data:video})
+            
+
+          }
+          else{
+            res.send("Unable to locate video")
+          }
+        }
+        else{
+          res.send("error occured")
+        }
+        
+      }
+      else{
+        res.send("Such user doesnt exist")
+      }
+    }
+    else{
+      res.send("Token not found")
+    }
+
+  }
+  catch(err){
+    console.log(err)
+  }
+})
+
+router.post('/register-view',async(req,res,next)=>{
+  try{
+    const { videoId } = req.body;
+    const video = await Videos.findById(videoId).exec()
+    if(video){
+      video.viewCount+=1;
+      await video.save()
+      res.send("View counted")
+    }
+    else{
+      res.send("Video not found")
+    }
+  }
+  catch(err){
+    res.send(err)
+  }
+})
+router.post('/handle-subscription',async(req,res,next)=>{
+  try{
+    const {channelId, status}= req.body
+    const tokenCook= req.cookies.token
+    console.log(status)
+    if(tokenCook){
+      const decode = jwt.verify(tokenCook,usersecretKey)
+      const userExs = await Users.findById(decode.userId).exec()
+      const subsHistory= userExs.subscribedChannelIds.filter((id)=>id==channelId)
+      if(subsHistory.length == 1){
+        console.log(subsHistory.length)
+        if(status=="default flag"){
+          res.send({msg:"is subscribed"})
+        }
+        else if(status=="unsubscribe" && subsHistory.length == 1){
+          userExs.subscribedChannelIds = userExs.subscribedChannelIds.filter(id => id !== channelId);
+          await userExs.save()
+          if(userExs.subscribedChannels>0){
+                      userExs.subscribedChannels-=1
+          await userExs.save()
+          }
+          chanExs= await Users.findById(channelId).exec()
+          if(chanExs.subscriberCount>0){
+                      chanExs.subscriberCount-=1
+          await chanExs.save()
+          }
+          res.send({msg:"unsubscribed!"})
+        }
+        else{
+          res.send("error!");
+        }
+      }
+      else{
+      if(userExs){
+        if(status=="subscribe"){
+          if(channelId){
+          userExs.subscribedChannelIds.push(channelId)
+          await userExs.save()
+          }
+
+          userExs.subscribedChannels+=1
+          await userExs.save()
+          chanExs= await Users.findById(channelId).exec()
+          chanExs.subscriberCount+=1
+          await chanExs.save()
+          res.send({msg:"subscribed!"})
+        }
+        else{
+          res.send("Failure")
+        }
+
+      }
+      else{
+        res.send("user not found")
+      }
+
+      }
+
+    }
+    else{
+      res.send("Invalid user")
+    }
+  }
+  catch(err){
+    res.send(err)
+  }
+})
+
+router.post('/fetch-channel-data',async (req,res,next)=>{
+  try{
+    const { channelId }=req.body;
+    const channelExs = await Users.findById(channelId).select('subscriberCount').exec()
+    if(channelExs){
+      res.send({subscriberCount:channelExs.subscriberCount})
+    }
+    else{
+      res.send("invalid channel id")
+    }
+  }
+  catch(err){
+    res.send(err)
+  }
+})
 module.exports = router;

@@ -1,0 +1,17 @@
+
+.navbar-mobile{
+    background-color: aqua;
+}
+
+@media screen and (max-width: 1400px) {
+    .navbar-mobile{
+        display: flex !important;
+    }
+    .navbar{
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 1700px) {
+
+}

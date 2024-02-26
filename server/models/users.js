@@ -11,7 +11,8 @@ const users=new Schema({
     subscriberCount:{type:Number,default:0},
     subscribedChannels:{type:Number,default:0},
     subscribedChannelIds:{type:[String]},
-    likedVideos:{type:[String]}
+    likedVideos:{type:[String]},
+    dislikedVideos: {type:[String]}
 })
 
 var Users=mongoose.model('Users',users)

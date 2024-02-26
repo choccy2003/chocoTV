@@ -7,6 +7,7 @@ const RecommendSection = (props) => {
   return (
     <>
     <div onClick={()=>{
+      
       navigate(`/video/${props.data.videoId}`);
       window.scrollTo(0, 0);
     }} style={{display:"flex",gap:"2%",backgroundColor:"rgb(28, 29, 31)",padding:"2%",marginRight:"4%",borderRadius:"10px"}}>

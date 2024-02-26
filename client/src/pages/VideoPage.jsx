@@ -27,8 +27,21 @@ const VideoPage = () => {
         dispatch(setVideoData(videos));
       })
     },[])
-    
-    const [recommendedVideosArray,updateRecommendedVideosArray]=useState([0,0,0,0,0,0,0,0,0,0,0,0])
+  
+    const registerView=()=>{
+      axios.post("http://localhost:3001/users/register-view",{videoId:videoId})
+      .then((res)=>{
+        console.log(res)
+      })
+    }
+  useEffect(()=>{
+    const pattern = /\/video\/\d+$/;
+    if(pattern.test(window.location.href)){
+          setTimeout(registerView,30000)
+    }
+
+
+  },[])
     return (
       <>
       <Navbar/>
@@ -44,8 +57,8 @@ const VideoPage = () => {
   
     </div>
     <div className='recommend-section' style={{width:"31%",}}>
-      {filteredData?(filteredData.map((data)=>{
-        return <div style={{margin:"0px 0 15px 0"}}><RecommendSection data={data} /></div>
+      {filteredData?(filteredData.map((data,i)=>{
+        return <div key={i} style={{margin:"0px 0 15px 0"}}><RecommendSection data={data}  /></div>
       })):(<div></div>)}
       
     </div>

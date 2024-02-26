@@ -1,5 +1,6 @@
 .like-button{
     transition: fill 300ms,transform 300ms;
+    cursor: pointer;
 }
 .like-button:hover{
     transform: scale(1.1);
@@ -10,6 +11,7 @@
     position: relative;
     top: 4px;
     left: 5%;
+    cursor: pointer;
 }
 .dislike-button:hover{
     transform: scale(1.1);
@@ -59,7 +61,11 @@ display: block !important;
 .button-grid{
     margin-left: auto !important;
 }
-.subscribe-button{
-    display: none;
+
 }
+
+@media screen and (max-width: 363px) {
+    .subscribe-button{
+        display: none !important;
+    }
 }
