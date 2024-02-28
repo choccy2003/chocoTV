@@ -1,17 +1,115 @@
-
-.navbar-mobile{
+.navbar-mobile {
     background-color: aqua;
 }
 
+.cart-menu {
+    height: 700px;
+    width: 490px;
+    background-color: #1c1d1f;
+    z-index: 9999999;
+    left: calc(100% - 500px);
+    position: fixed;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+
+
+
+.cart-animation {
+    animation-name: cart;
+    animation-duration: 500ms;
+}
+
+.user-list {
+    height: 60px;
+    padding-top: 25px;
+    padding-left: 25px;
+    font-weight: 100;
+    font-size: 22px;
+    font-family: 'Righteous';
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    background-color: #1c1d1f;
+    color: white;
+
+}
+
+
+
+@keyframes cart {
+    0% {
+        left: calc(100%);
+    }
+
+    100% {
+        left: calc(100% - 500px);
+    }
+}
+
 @media screen and (max-width: 1400px) {
-    .navbar-mobile{
+    .navbar-mobile {
         display: flex !important;
     }
-    .navbar{
+
+    .navbar {
         display: none !important;
     }
 }
 
-@media screen and (max-width: 1700px) {
+@media screen and (max-width: 425px) {
+    .cart-menu {
+        width: 415px;
+        left: 1.5%;
+        overflow-x: hidden;
+    }
 
+    @keyframes cart {
+        0% {
+            left: calc(100%);
+        }
+
+        100% {
+            left: calc(100% - 415px);
+        }
+    }
+}
+
+@media screen and (max-width: 375px) {
+
+    .cart-menu {
+        width: 364px;
+        left: 1.5%;
+        overflow-x: hidden;
+    }
+
+    @keyframes cart {
+        0% {
+            left: calc(100%);
+        }
+
+        100% {
+            left: calc(100% - 364px);
+        }
+    }
+}
+
+@media screen and (max-width: 320px) {
+
+    .cart-menu {
+        width: 310px;
+        left: 1.5%;
+        overflow-x: hidden;
+    }
+
+    @keyframes cart {
+        0% {
+            left: calc(100%);
+        }
+
+        100% {
+            left: calc(100% - 310px);
+        }
+    }
 }

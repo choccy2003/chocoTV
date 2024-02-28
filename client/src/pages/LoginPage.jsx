@@ -9,7 +9,7 @@ import Cookies from 'js-cookie';
 
 const LoginPage = () => {
     const dispatch = useDispatch();
-    const navigate=useNavigate();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         password: '',
         email: '',
@@ -18,37 +18,38 @@ const LoginPage = () => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
-    const handleSubmit=(event)=>{
+    const handleSubmit = (event) => {
         event.preventDefault();
-        if(formData.email && formData.password){
-    axios.post("http://localhost:3001/users/login",formData,{
-        withCredentials: true 
-      })
-        .then((response)=>{
-            if(response.data.msg === "Success"){
-                toast("Login Successful!")
-                setTimeout(()=>{ navigate('/')},2000)
-                
-            }
-            else if(response.data ==="Match Failure"){
-                toast("Wrong Password!")
-            }
-            else{
-                toast("No Account Found!")
-            }
-        }) 
+        if (formData.email && formData.password) {
+            axios.post("http://localhost:3001/users/login", formData, {
+                withCredentials: true
+            })
+                .then((response) => {
+                    if (response.data.msg === "Success") {
+                        toast("Login Successful!")
+                        localStorage.setItem("isLoggedIn", true)
+                        setTimeout(() => { window.location.href = "/"; }, 2000)
+
+                    }
+                    else if (response.data === "Match Failure") {
+                        toast("Wrong Password!")
+                    }
+                    else {
+                        toast("No Account Found!")
+                    }
+                })
         }
-        else{
+        else {
             toast("Recheck credentials!")
         }
 
     }
-  return (
-    <div style={{ height: '100%', width: '100%', position: 'absolute', zIndex: '9999', top: '0px', left: '0px' }}>
-        <ToastContainer theme='dark'/>
+    return (
+        <div style={{ height: '100%', width: '100%', position: 'absolute', zIndex: '9999', top: '0px', left: '0px' }}>
+            <ToastContainer theme='dark' />
             <div>
                 <div style={{ fontSize: '44px', fontFamily: 'Arial, Helvetica, sans-serif', paddingTop: '5%', margin: 'auto', maxWidth: 'fit-content', fontWeight: 600 }}>
-                    <span><Link to={'/'} style={{ textDecoration: 'none',color:"white"}}>chocoTV</Link></span>
+                    <span><Link to={'/'} style={{ textDecoration: 'none', color: "white" }}>chocoTV</Link></span>
                 </div>
                 <div style={{ height: '450px', width: '390px', backgroundColor: 'rgb(28, 29, 31)', borderRadius: '15px', margin: 'auto', marginTop: '70px', fontFamily: 'Arial, Helvetica, sans-serif' }}>
                     <div style={{ fontSize: '28px', fontFamily: 'Arial, Helvetica, sans-serif', paddingTop: '30px', fontWeight: 600, width: 'auto', marginBottom: '30px' }}>
@@ -58,7 +59,7 @@ const LoginPage = () => {
                         <div style={{ fontSize: '17px', fontWeight: 500, fontFamily: 'Arial, Helvetica, sans-serif', marginLeft: '80px', marginTop: '45px' }}>
                             Email<br />
                             <input
-                                style={{ marginTop: '5px', backgroundColor: 'rgb(28, 29, 31)', width: '220px', border: '1px solid white', height: '23px', borderRadius: '3px' ,color:"white"}}
+                                style={{ marginTop: '5px', backgroundColor: 'rgb(28, 29, 31)', width: '220px', border: '1px solid white', height: '23px', borderRadius: '3px', color: "white" }}
                                 type="text"
                                 name="email"
                                 value={formData.email}
@@ -69,7 +70,7 @@ const LoginPage = () => {
                             Password<br />
 
                             <input
-                                style={{ marginTop: '5px', backgroundColor: 'rgb(28, 29, 31)', width: '220px', border: '1px solid white', height: '23px', borderRadius: '3px',color:"white" }}
+                                style={{ marginTop: '5px', backgroundColor: 'rgb(28, 29, 31)', width: '220px', border: '1px solid white', height: '23px', borderRadius: '3px', color: "white" }}
                                 type="password"
                                 name="password"
                                 value={formData.password}
@@ -77,23 +78,23 @@ const LoginPage = () => {
                             />
                         </div>
                         <div style={{ width: 'auto', marginLeft: '205px' }}>
-                            <a style={{ color: 'white', fontSize: '13px', fontWeight: 500 ,position:"relative",top:"3px"}} href="#">Forgot password?</a>
+                            <a style={{ color: 'white', fontSize: '13px', fontWeight: 500, position: "relative", top: "3px" }} href="#">Forgot password?</a>
                         </div>
                         <button
-                            style={{ width: '230px', marginLeft: '80px', borderRadius: '5px', height: '33px', backgroundColor: '#BB86FC',border: "1px solid #9c5cac", color: 'white', fontSize: '16px', marginTop: "30px",cursor:"pointer" }}
+                            style={{ width: '230px', marginLeft: '80px', borderRadius: '5px', height: '33px', backgroundColor: '#BB86FC', border: "1px solid #9c5cac", color: 'white', fontSize: '16px', marginTop: "30px", cursor: "pointer" }}
                             type="submit"
-                    className='login-btn'>
+                            className='login-btn'>
                             Log in
                         </button>
                     </form>
                     <div style={{ width: '60px', position: 'relative', left: '165px', top: '11px', zIndex: 10, backgroundColor: 'rgb(28, 29, 31))' }}>
                         <div style={{ width: 'fit-content', margin: 'auto' }}>or</div>
                     </div>
-                    <hr style={{ width: '260px', margin: 'auto', marginBottom: '20px',border:"0px"}} />
+                    <hr style={{ width: '260px', margin: 'auto', marginBottom: '20px', border: "0px" }} />
                     <button
-                        style={{ width: '230px', marginLeft: '80px', borderRadius: '5px', height: '33px', backgroundColor: '#e3483b', border: '1px solid rgb(153, 37, 37)', color: 'white', fontSize: '16px',cursor:"pointer" }}
+                        style={{ width: '230px', marginLeft: '80px', borderRadius: '5px', height: '33px', backgroundColor: '#e3483b', border: '1px solid rgb(153, 37, 37)', color: 'white', fontSize: '16px', cursor: "pointer" }}
                         type="button"
-                    className='google-login-btn'>
+                        className='google-login-btn'>
                         Continue with Google
                     </button>
 
@@ -104,7 +105,7 @@ const LoginPage = () => {
                 </div>
             </div>
         </div>
-  )
+    )
 }
 
 export default LoginPage

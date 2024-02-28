@@ -3,6 +3,7 @@ import { IoMdThumbsUp, IoMdThumbsDown } from "react-icons/io";
 import { FaShare } from "react-icons/fa";
 import "../styles/videodiscription.css";
 import axios from "axios";
+import { Link, useNavigate } from 'react-router-dom'
 import { useSelector } from "react-redux";
 import { ToastContainer, toast } from 'react-toastify';
 const VideoDiscription = (props) => {
@@ -11,26 +12,26 @@ const VideoDiscription = (props) => {
   const [dislikeButtonActive, setDislikeButtonActive] = useState(null);
   const [isSubscribed, setIsSubscribed] = useState(null);
   const [videoDetails, setVideoDetails] = useState(null);
-  const [input,setInput]=useState(false)
-  const userData= useSelector((state)=>state.userData)
-  const [inputDislike,setInputDislike]=useState(false)
-  const [inputSubs,setInputSubs]=useState(false)
-  const [channelData,setChannelData]=useState([])
-  const [refreshData,setRefreshData]=useState(false)
+  const [input, setInput] = useState(false)
+  const userData = useSelector((state) => state.userData)
+  const [inputDislike, setInputDislike] = useState(false)
+  const [inputSubs, setInputSubs] = useState(false)
+  const [channelData, setChannelData] = useState([])
+  const [refreshData, setRefreshData] = useState(false)
+  const navigate = useNavigate()
 
-
-  useEffect(()=>{
-    if(videoDetails){
-       axios.post("http://localhost:3001/users/fetch-channel-data",{channelId:videoDetails.channelId})
-       .then((res)=>setChannelData(res.data))
+  useEffect(() => {
+    if (videoDetails) {
+      axios.post("http://localhost:3001/users/fetch-channel-data", { channelId: videoDetails.channelId })
+        .then((res) => setChannelData(res.data))
     }
-  
-  },[refreshData,videoDetails])
+
+  }, [refreshData, videoDetails])
   useEffect(() => {
 
     if (props.videoId) {
       axios
-        .post("http://192.168.1.6:3001/users/fetch-video", {
+        .post("http://localhost:3001/users/fetch-video", {
           _id: props.videoId,
         })
         .then((response) => {
@@ -46,147 +47,157 @@ const VideoDiscription = (props) => {
   }, [props.videoId]);
 
   useEffect(() => {
-    if (likeButtonActive==null && props.videoId) {
-   
-      axios
-        .post(
-          "http://localhost:3001/users/handle-like",
-          {
-            likeStatus: "default flag",
-            videoId: props.videoId,
-          },
-          { withCredentials: true },
-        )
-        .then((res) => {
+    if (JSON.parse(localStorage.getItem('isLoggedIn').toLowerCase())) {
+      if (likeButtonActive == null && props.videoId) {
 
-          if(res.data.likeStatus){
-            setLikeButtonActive(true)
-           
-          }
-          
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+        axios
+          .post(
+            "http://localhost:3001/users/handle-like",
+            {
+              likeStatus: "default flag",
+              videoId: props.videoId,
+            },
+            { withCredentials: true },
+          )
+          .then((res) => {
+
+            if (res.data.likeStatus) {
+              setLikeButtonActive(true)
+
+            }
+
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+      else if (input && props.videoId) {
+        axios
+          .post(
+            "http://localhost:3001/users/handle-like",
+            {
+              likeStatus: likeButtonActive ? "true" : "false",
+              videoId: props.videoId,
+            },
+            { withCredentials: true },
+          )
+          .then((res) => {
+            if (res.data.data) {
+              console.log(res.data)
+              setVideoDetails(res.data.data)
+            }
+            else if (res.data.likeStatus) {
+              setLikeButtonActive(true)
+            }
+
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
     }
-    else if(input && props.videoId){
-      axios
-      .post(
-        "http://localhost:3001/users/handle-like",
-        {
-          likeStatus: likeButtonActive?"true":"false",
-          videoId: props.videoId,
-        },
-        { withCredentials: true },
-      )
-      .then((res) => {
-        if(res.data.data){
-          console.log(res.data)
-          setVideoDetails(res.data.data)
-        }
-        else if(res.data.likeStatus){
-          setLikeButtonActive(true)
-        }
-        
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-    }
-    return ()=>{
+
+    return () => {
       setInput(false);
     }
-  }, [likeButtonActive, props.videoId]);
+  }, [likeButtonActive, props.videoId, localStorage.getItem('isLoggedIn')]);
 
   useEffect(() => {
-    
-    if (dislikeButtonActive==null && props.videoId) {
-   
-      axios
-        .post(
-          "http://localhost:3001/users/handle-dislike",
-          {
-            dislikeStatus: "default flag",
-            videoId: props.videoId,
-          },
-          { withCredentials: true },
-        )
-        .then((res) => {
-          if(res.data.dislikeStatus){
-            setDislikeButtonActive(true)
-          
-          }
-          
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+
+    if (JSON.parse(localStorage.getItem('isLoggedIn').toLowerCase())) {
+      if (dislikeButtonActive == null && props.videoId) {
+
+        axios
+          .post(
+            "http://localhost:3001/users/handle-dislike",
+            {
+              dislikeStatus: "default flag",
+              videoId: props.videoId,
+            },
+            { withCredentials: true },
+          )
+          .then((res) => {
+            if (res.data.dislikeStatus) {
+              setDislikeButtonActive(true)
+
+            }
+
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+      else if (inputDislike && props.videoId) {
+
+        axios
+          .post(
+            "http://localhost:3001/users/handle-dislike",
+            {
+              dislikeStatus: dislikeButtonActive ? "true" : "false",
+              videoId: props.videoId,
+            },
+            { withCredentials: true },
+          )
+          .then((res) => {
+            if (res.data.data) {
+              setVideoDetails(res.data.data)
+            }
+            else if (res.data.dislikeStatus) {
+              setDislikeButtonActive(true)
+            }
+
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
     }
-    else if(inputDislike && props.videoId){
-      
-      axios
-      .post(
-        "http://localhost:3001/users/handle-dislike",
-        {
-          dislikeStatus: dislikeButtonActive?"true":"false",
-          videoId: props.videoId,
-        },
-        { withCredentials: true },
-      )
-      .then((res) => {
-        if(res.data.data){
-          setVideoDetails(res.data.data)
-        }
-        else if(res.data.dislikeStatus){
-          setDislikeButtonActive(true)
-        }
-        
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    else {
+      console.log("not logged in!!")
     }
-    return ()=>{
+    return () => {
       setInputDislike(false);
     }
-  }, [dislikeButtonActive, props.videoId]);
-  
-useEffect(()=>{
+  }, [dislikeButtonActive, props.videoId, localStorage.getItem("isLoggedIn")]);
 
-if(isSubscribed===null && videoDetails ){
-  axios.post('http://localhost:3001/users/handle-subscription',{ channelId: videoDetails.channelId, status: "default flag" },{
-    withCredentials:true
-  }).then((res)=>{
-    if(res.data.msg=="is subscribed"){
-      setIsSubscribed(true)
-    }
-  })
-}
+  useEffect(() => {
+    if (JSON.parse(localStorage.getItem('isLoggedIn').toLowerCase())) {
+      if (isSubscribed === null && videoDetails) {
+        axios.post('http://localhost:3001/users/handle-subscription', { channelId: videoDetails.channelId, status: "default flag" }, {
+          withCredentials: true
+        }).then((res) => {
+          if (res.data.msg == "is subscribed") {
+            setIsSubscribed(true)
+          }
+        })
+      }
 
-else if(inputSubs && videoDetails){
+      else if (inputSubs && videoDetails) {
 
-  axios.post('http://localhost:3001/users/handle-subscription',{ channelId: videoDetails.channelId , status: isSubscribed?"subscribe":"unsubscribe"},{
-    withCredentials:true
-  }).then((res)=>{
-    if(res.data.msg=="subscribed!"){
-      setIsSubscribed(true)
-      
+        axios.post('http://localhost:3001/users/handle-subscription', { channelId: videoDetails.channelId, status: isSubscribed ? "subscribe" : "unsubscribe" }, {
+          withCredentials: true
+        }).then((res) => {
+          if (res.data.msg == "subscribed!") {
+            setIsSubscribed(true)
+
+          }
+          else if (res.data.msg == "unsubscribed!") {
+            setIsSubscribed(false)
+          }
+          setRefreshData(true)
+        })
+      }
     }
-    else if(res.data.msg=="unsubscribed!"){
-      setIsSubscribed(false)
+
+    return () => {
+      setInputSubs(false);
+      setRefreshData(false)
     }
-    setRefreshData(true)
-  })
-}
-return ()=>{
-  setInputSubs(false);
-  setRefreshData(false)
-}
-},[isSubscribed,videoDetails])
+  }, [isSubscribed, videoDetails, localStorage.getItem('isLoggedIn')])
   if (videoDetails) {
     return (
       <>
-      <ToastContainer/>
+        <ToastContainer />
         <div
           style={{
             display: "flex",
@@ -217,21 +228,30 @@ return ()=>{
                 borderRadius: "50%",
                 marginRight: "1%",
                 minWidth: "40px",
-                backgroundImage: "url(http://192.168.1.6:3001/images/a.jpg)",
+                backgroundImage: "url(http://localhost:3001/images/a.jpg)",
                 backgroundSize: "contain",
               }}
             ></div>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div
                 className="channel-name"
-                style={{ fontSize: "1.1rem", fontWeight: "500" }}
+                style={{ fontSize: "1.1rem", fontWeight: "500", cursor: "pointer" }}
+                onClick={() => {
+                  navigate(`/channel/${videoDetails.channelId}`)
+                }}
               >
                 {videoDetails.channelName}{" "}
                 {isSubscribed ? (
                   <span
                     onClick={() => {
-                      setIsSubscribed(false);
-                      setInputSubs(true)
+                      if (JSON.parse(localStorage.getItem('isLoggedIn').toLowerCase())) {
+                        setIsSubscribed(false);
+                        setInputSubs(true)
+                      }
+                      else {
+                        toast.error("Please sign in before")
+                      }
+
                     }}
                     style={{
                       backgroundColor: "#1c1d1f",
@@ -247,8 +267,13 @@ return ()=>{
                 ) : (
                   <span
                     onClick={() => {
-                      setIsSubscribed(true);
-                      setInputSubs(true)
+                      if (JSON.parse(localStorage.getItem('isLoggedIn').toLowerCase())) {
+                        setIsSubscribed(true);
+                        setInputSubs(true)
+                      }
+                      else {
+                        toast.error("Please sign in before")
+                      }
                     }}
                     className="subscribe-button"
                     style={{
@@ -271,7 +296,7 @@ return ()=>{
                   width: "max-content",
                 }}
               >
-                {channelData?channelData.subscriberCount:0} subscribers
+                {channelData ? channelData.subscriberCount : 0} subscribers
               </div>
             </div>
             <div
@@ -314,18 +339,24 @@ return ()=>{
               <IoMdThumbsUp
                 className="like-button"
                 onClick={() => {
-                  if (!dislikeButtonActive) { // Check if the dislike button is not active
-                    if (likeButtonActive) {
-                      setLikeButtonActive(false);
-                      setInput(true);
+                  if (JSON.parse(localStorage.getItem('isLoggedIn').toLowerCase())) {
+                    if (!dislikeButtonActive) { // Check if the dislike button is not active
+                      if (likeButtonActive) {
+                        setLikeButtonActive(false);
+                        setInput(true);
+                      } else {
+                        setLikeButtonActive(true);
+                        setInput(true);
+                      }
                     } else {
-                      setLikeButtonActive(true);
-                      setInput(true);
+                      // Notify the user that they cannot like while disliking
+                      toast.error("You can't like the video while disliking it!");
                     }
-                  } else {
-                    // Notify the user that they cannot like while disliking
-                    toast.error("You can't like the video while disliking it!");
                   }
+                  else {
+                    toast.error("Please sign in before")
+                  }
+
                 }}
                 style={{
                   fill: `${likeButtonActive ? "rgb(228, 115, 255)" : ""}`,
@@ -355,18 +386,24 @@ return ()=>{
               <IoMdThumbsDown
                 className="dislike-button"
                 onClick={() => {
-                  if (!likeButtonActive) { // Check if the like button is not active
-                    if (dislikeButtonActive) {
-                      setDislikeButtonActive(false);
-                      setInputDislike(true);
+                  if (JSON.parse(localStorage.getItem('isLoggedIn').toLowerCase())) {
+                    if (!likeButtonActive) { // Check if the like button is not active
+                      if (dislikeButtonActive) {
+                        setDislikeButtonActive(false);
+                        setInputDislike(true);
+                      } else {
+                        setDislikeButtonActive(true);
+                        setInputDislike(true);
+                      }
                     } else {
-                      setDislikeButtonActive(true);
-                      setInputDislike(true);
+                      // Notify the user that they cannot dislike while liking
+                      toast.error("You can't dislike the video while liking it!");
                     }
-                  } else {
-                    // Notify the user that they cannot dislike while liking
-                    toast.error("You can't dislike the video while liking it!");
                   }
+                  else {
+                    toast.error("Please sign in before")
+                  }
+
                 }}
                 style={{
                   fill: `${dislikeButtonActive ? "rgb(255, 115, 115)" : ""}`,
@@ -424,7 +461,7 @@ return ()=>{
                   <span
                     onClick={() => {
                       setIsSubscribed(false);
-                      
+
                     }}
                     style={{
                       backgroundColor: "#1c1d1f",
@@ -441,7 +478,7 @@ return ()=>{
                   <span
                     onClick={() => {
                       setIsSubscribed(true);
-                     
+
                     }}
                     className="subscribe-button"
                     style={{
